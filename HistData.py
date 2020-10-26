@@ -13,7 +13,7 @@ import pandas as pd
 
 #########Define to Start##########
 STARTTIME = 1577836800000
-ENDTIME = 1578096000000
+ENDTIME = 1580511600000
 #########End Define to Start##########
 
 #static 
@@ -21,7 +21,7 @@ PROTOCOL = "https"
 HOST = "api-pub.bitfinex.com" #"api.bitfinex.com"
 VERSION = "v2"
 ENDPOINTS = "candles"
-TIMEFRAME = "trade:1m"
+TIMEFRAME = "trade:1h"
 SYMBOL = "tBTCUSD"
 SECTION = "hist"
 LIMIT = "3600" #seconds per one day -> max. requested: 10000
@@ -35,31 +35,31 @@ def APICALL(protocol, host, version, endpoints, timeframe, symbol, selection, li
     if response.ok:
             li = response.json()#pd.DataFrame(response.json())
             #print(df)
-            #df.columns = ['MTS', 'OPEN', 'CLOSE', 'HIGH', 'LOW', 'VOLUME']
             return li
     else:
         raise ValueError(response)
 
 def StartEndtime(starttime = 1577836800000, endtime = 1577923200000, deltatime = 86400000):
     if endtime > starttime:
-
         #calc iteration of how many day's
-        nNumRequests = int((endtime-starttime) / deltatime)
+        nNumRequests = int((endtime-starttime)/deltatime)
 
         #empty DataFrame
         dfTime = pd.DataFrame()
-
+        
         #add new times to the df
         for i in range(nNumRequests):
-            liTime = [[str(starttime),str(endtime)]]
+            #add data
+            liTime = [[str(starttime),str(starttime+deltatime)]]
             dfTime = dfTime.append(liTime, ignore_index=True)         
-            starttime = endtime
-            endtime += deltatime
+            
+            #new calc data for new loop
+            starttime = starttime+deltatime
 
             #label the columns
             if i+1 == nNumRequests:
                 dfTime.columns = ['Starttime', 'Endtime']                
-        
+
         return dfTime
 
     else:
@@ -71,23 +71,35 @@ while True:
         #Get TimeDataframe for each day
         dfTime = StartEndtime(starttime=STARTTIME, endtime=ENDTIME)
         
+        #create new df
         data = pd.DataFrame()
         
+        #make the Api calls and put them together
         for index, row in dfTime.iterrows():
             Starttime = row[0]
             ENDTIME = row[1]
             li1 = APICALL(PROTOCOL,HOST,VERSION,ENDPOINTS,TIMEFRAME,SYMBOL,SECTION,LIMIT,Starttime,ENDTIME,SORT)  
             time.sleep(1)
             data = data.append(li1)
+            
+        #drop duplicates - passing from the one api call to the other
+        data = data.drop_duplicates()
+
+        #name the coloums
+        data.columns = ['MTS', 'OPEN', 'CLOSE', 'HIGH', 'LOW', 'VOLUME']
+
+        #set new index number
+        data = data.reset_index()
+
+        #drop old index number
+        data = data.drop(['index'], axis=1)
 
         #End of this state
         nState += 1
-      
 
     #Stopp Sate
     elif nState == 1: 
-        #df.to_csv('GfG.csv', index = True)
-        print(data)
+        data.to_csv('GfG.csv', index = True)
         break 
 
     else:
