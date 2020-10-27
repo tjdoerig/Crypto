@@ -13,7 +13,7 @@ import pandas as pd
 
 #########Define to Start##########
 STARTTIME = 1577836800000
-ENDTIME = 1580511600000
+ENDTIME = 1603790815946
 #########End Define to Start##########
 
 #static 
@@ -99,7 +99,7 @@ while True:
 
     #Stopp Sate
     elif nState == 1: 
-        data.to_csv('GfG.csv', index = True)
+        data.to_csv('BTC1h2020.csv', index = True)
         break 
 
     else:
