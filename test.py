@@ -3,7 +3,7 @@ import json
 import time
 import numpy as np
 import pandas as pd
-
+'''
 #Documentation:
 #"https://docs.bitfinex.com/reference#rest-public-platform-status"
 
@@ -46,4 +46,5 @@ def StartEndtime(starttime = 1577836800000, endtime = 1577923200000, deltatime =
 dfTime = StartEndtime(STARTTIME,ENDTIME)
 
 print(dfTime)
-
+'''
+print(pd.to_datetime(1603790815946, unit='ms'))
