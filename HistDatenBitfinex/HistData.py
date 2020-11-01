@@ -21,7 +21,7 @@ PROTOCOL = "https"
 HOST = "api-pub.bitfinex.com" #"api.bitfinex.com"
 VERSION = "v2"
 ENDPOINTS = "candles"
-TIMEFRAME = "trade:1h"
+TIMEFRAME = "trade:1d"
 SYMBOL = "tBTCUSD"
 SECTION = "hist"
 LIMIT = "3600" #seconds per one day -> max. requested: 10000
@@ -80,6 +80,8 @@ while True:
             ENDTIME = row[1]
             li1 = APICALL(PROTOCOL,HOST,VERSION,ENDPOINTS,TIMEFRAME,SYMBOL,SECTION,LIMIT,Starttime,ENDTIME,SORT)  
             time.sleep(1)
+            #print current step x/y to show how "far" it ist
+            print("Current step " + str(index) + "/" + str(len(dfTime)))
             data = data.append(li1)
             
         #drop duplicates - passing from the one api call to the other
@@ -99,7 +101,7 @@ while True:
 
     #Stopp Sate
     elif nState == 1: 
-        data.to_csv('BTC1h2020.csv', index = True)
+        data.to_csv('BTC1d2020.csv', index = True)
         break 
 
     else:
